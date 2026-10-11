@@ -16,7 +16,7 @@ pipeline {
 
             steps {
 
-                bat 'pythom -m pytest --junit=test-results.xml'
+                bat 'python -m pytest --junit=test-results.xml'
             }
         }
     }
