@@ -1,0 +1,40 @@
+pipeline {
+
+    agent any
+
+    stages {
+
+        stage("checkout"){
+
+            steps{
+
+                echo 'Checking out source code..'
+            }
+        }
+
+        stage("Install dependecies"){
+
+            steps {
+
+                bat 'pythom -m pytest --junit=test-results.xml'
+            }
+        }
+    }
+
+    post {
+
+        always {
+
+            junit 'test-results.xml'
+        }
+
+        success {
+            echo 'All tests passed successfully'
+        }
+
+        failure {
+
+            echo 'Tests failed'
+        }
+    }
+}
