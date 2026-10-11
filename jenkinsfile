@@ -24,7 +24,7 @@ pipeline {
 
             steps {
 
-                bat 'python -m pytest --junitxml=test-results.xml'
+                bat 'python -m pytest --junitxml=test-results.xml --html=report.html --self-contained-html'
             }
         }
     }
@@ -32,8 +32,8 @@ pipeline {
     post {
 
         always {
-
-            junit 'test-results.xml'
+        junit testResults: 'test-results.xml', allowEmptyResults: true
+        archiveArtifacts artifacts: 'report.html', allowEmptyArchive: true
         }
 
         success {
