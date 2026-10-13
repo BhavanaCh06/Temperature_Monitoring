@@ -1,48 +1,52 @@
-pipeline {
 
+pipeline {
     agent any
 
+    options {
+        skipStagesAfterUnstable()
+        timestamps()
+    }
+
     stages {
-
-        stage("checkout"){
-
-            steps{
-
-                echo 'Checking out source code..'
+        stage('Checkout') {
+            steps {
+                checkout scm
+                echo 'Source code checked out successfully'
             }
         }
 
-        stage("Install dependecies"){
-
+        stage('Install Dependencies') {
             steps {
-
                 bat 'python -m pip install -r requirements.txt'
             }
         }
 
-        stage("Run tests"){
-
+        stage('Run Automated Tests') {
             steps {
-
                 bat 'python -m pytest --junitxml=test-results.xml --html=report.html --self-contained-html'
             }
         }
     }
 
     post {
-
         always {
-        junit testResults: 'test-results.xml', allowEmptyResults: true
-        archiveArtifacts artifacts: 'report.html', allowEmptyArchive: true
+            junit testResults: 'test-results.xml',
+                  allowEmptyResults: true
+
+            archiveArtifacts artifacts: 'report.html',
+                             allowEmptyArchive: true
         }
 
         success {
             echo 'All tests passed successfully'
         }
 
-        failure {
+        unstable {
+            echo 'Build is unstable'
+        }
 
-            echo 'Tests failed'
+        failure {
+            echo 'Pipeline failed. Check the console output.'
         }
     }
 }
