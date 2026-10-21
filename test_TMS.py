@@ -18,4 +18,4 @@ def test_boundary_warning():
 
 
 def test_boundary_critical():
-    assert get_status(100) == "NORMAL"
+    assert get_status(100) == "CRITICAL"
