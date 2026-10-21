@@ -27,6 +27,12 @@ pipeline {
                 bat 'python -m pytest --junitxml=test-results.xml --html=report.html --self-contained-html'
             }
         }
+
+        stage("Build Docker Image") {
+            steps {
+                bat 'docker build -t tms_img .'
+            }
+        }
     }
 
     post {
