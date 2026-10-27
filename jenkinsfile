@@ -83,7 +83,7 @@ pipeline {
                                 variable: 'GEMINI_API_KEY'
                             )
                         ]) {
-                            bat 'python analyze_failure.py'
+                            bat 'python -c "import os; print(chr(75) + chr(69) + chr(89) + chr(95) + chr(80) + chr(82) + chr(69) + chr(83) + chr(69) + chr(78) + chr(84) + chr(61) + str(bool(os.getenv(chr(71) + chr(69) + chr(77) + chr(73) + chr(78) + chr(73) + chr(95) + chr(65) + chr(80) + chr(73) + chr(95) + chr(75) + chr(69) + chr(89))))"'
                         }
                     } catch (Exception e) {
                         echo 'AI analysis could not complete. The test failure remains unchanged.'
