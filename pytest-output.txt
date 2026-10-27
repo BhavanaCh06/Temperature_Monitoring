@@ -1,0 +1,2 @@
+FAILED test_TMS.py::test_critical_temperature
+AssertionError: Expected 'CRITICAL' but got 'WARNING'

@@ -5,7 +5,10 @@ pipeline {
     options {
         skipStagesAfterUnstable()
         timestamps()
-        
+    }
+
+    environment {
+        PYTEST_FAILED = 'false'
     }
 
     stages {
@@ -24,11 +27,25 @@ pipeline {
 
         stage('Run Automated Tests') {
             steps {
-                bat 'python -m pytest --junitxml=test-results.xml --html=report.html --self-contained-html'
+                script {
+                    bat 'if exist pytest-output.txt del pytest-output.txt'
+
+                    def testStatus = bat(
+                        returnStatus: true,
+                        script: 'python -m pytest --junitxml=test-results.xml --html=report.html --self-contained-html > pytest-output.txt 2>&1'
+                    )
+
+                    bat 'type pytest-output.txt'
+
+                    if (testStatus != 0) {
+                        env.PYTEST_FAILED = 'true'
+                        error('Automated tests failed. Starting AI failure analysis.')
+                    }
+                }
             }
         }
 
-        stage("Build Docker Image") {
+        stage('Build Docker Image') {
             steps {
                 bat 'docker build -t tms_img .'
             }
@@ -40,7 +57,7 @@ pipeline {
             junit testResults: 'test-results.xml',
                   allowEmptyResults: true
 
-            archiveArtifacts artifacts: 'report.html',
+            archiveArtifacts artifacts: 'report.html,pytest-output.txt',
                              allowEmptyArchive: true
         }
 
@@ -54,6 +71,25 @@ pipeline {
 
         failure {
             echo 'Pipeline failed. Check the console output.'
+
+            script {
+                if (env.PYTEST_FAILED == 'true') {
+                    echo 'Starting Gemini AI failure analysis...'
+
+                    try {
+                        withCredentials([
+                            string(
+                                credentialsId: 'gemini-api-key',
+                                variable: 'GEMINI_API_KEY'
+                            )
+                        ]) {
+                            bat 'python analyze_failure.py'
+                        }
+                    } catch (Exception e) {
+                        echo 'AI analysis could not complete. The test failure remains unchanged.'
+                    }
+                }
+            }
         }
     }
 }
