@@ -73,6 +73,7 @@ pipeline {
             echo 'Pipeline failed. Check the console output.'
 
             script {
+                echo "DEBUG: PYTEST_FAILED = ${env.PYTEST_FAILED}"
                 if (env.PYTEST_FAILED == 'true') {
                     echo 'Starting Gemini AI failure analysis...'
 
@@ -86,7 +87,10 @@ pipeline {
                             bat 'python analyze_failure.py'
                         }
                     } catch (Exception e) {
-                        echo 'AI analysis could not complete. The test failure remains unchanged.'
+                        echo "AI analysis failed: ${e.getMessage()}"
+                    }
+                    else {
+                        echo 'Gemini analysis skipped because PYTEST_FAILED is not true.'
                     }
                 }
             }
