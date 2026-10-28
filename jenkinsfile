@@ -89,10 +89,11 @@ pipeline {
                     } catch (Exception e) {
                         echo "AI analysis failed: ${e.getMessage()}"
                     }
-                    else {
+                    
+                }
+                else {
                         echo 'Gemini analysis skipped because PYTEST_FAILED is not true.'
                     }
-                }
             }
         }
     }
