@@ -38,7 +38,7 @@ pipeline {
                     bat 'type pytest-output.txt'
 
                     if (testStatus != 0) {
-                        env.PYTEST_FAILED = 'true'
+                        currentBuild.description = 'Automated tests failed'
                         error('Automated tests failed. Starting AI failure analysis.')
                     }
                 }
@@ -73,8 +73,8 @@ pipeline {
             echo 'Pipeline failed. Check the console output.'
 
             script {
-                echo "DEBUG: PYTEST_FAILED = ${env.PYTEST_FAILED}"
-                if (env.PYTEST_FAILED == 'true') {
+                
+                if (currentBuild.description == 'Automated tests failed') {
                     echo 'Starting Gemini AI failure analysis...'
 
                     try {
@@ -91,9 +91,7 @@ pipeline {
                     }
                     
                 }
-                else {
-                        echo 'Gemini analysis skipped because PYTEST_FAILED is not true.'
-                    }
+                
             }
         }
     }
