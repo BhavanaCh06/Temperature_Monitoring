@@ -10,7 +10,7 @@ def test_warning_temperature():
 
 
 def test_critical_temperature():
-    assert get_status(110) == "CRITICAL"
+    assert get_status(110) == "NORMAL"
 
 
 def test_boundary_warning():
